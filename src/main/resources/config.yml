@@ -1,0 +1,41 @@
+# 请求相关配置
+http:
+  # 从主机读取数据的超时时间(单位: 秒)
+  readTimeout: 10
+  # 连接主机的超时时间(单位: 秒)
+  connectTimeout: 10
+
+  # 代理设置
+  proxy:
+    # 判断是否启动代理
+    isStart: false
+    # 代理地址
+    host: 127.0.0.1
+    # 代理端口
+    port: 8080
+    # 代理账号
+    username: ""
+    # 代理密码
+    password: ""
+
+  # 扫描协议
+  scanProtocol:
+    # 用于判断是否启动 http 协议,进行 host 碰撞
+    isScanHttp: true
+    # 用于判断是否启动 https 协议,进行 host 碰撞
+    isScanHttps: true
+
+# 相似度比例
+# 1 = 100%, 0.7 = 70%
+# 主要用来 host碰撞请求 对比 原请求 与 绝对host错误请求的相似度 超过多少会被认为不存在该问题
+# 例如:
+#   host碰撞请求 与 原请求 相似度超过0.7则认为不存在该问题
+#   host碰撞请求 与 绝对host错误请求的 相似度超过0.7则认为不存在该问题
+similarityRatio: 0.7
+
+# host碰撞的数据来源
+dataSource:
+  # ip 数据来源
+  ipFilePath: "ipList.txt"
+  # host 数据来源
+  hostFilePath: "hostList.txt"
