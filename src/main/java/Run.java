@@ -105,7 +105,7 @@ public class Run {
                                         String.valueOf(errorHostRequestBody.length())};
                                 csvWriter.writeRecord(data);
 
-                                // host碰撞成功的
+                                // 实时输出host碰撞成功的日志数据
                                 String successLog = String.format(
                                         "协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s 匹配成功",
                                         protocol, ip, host, getBodyTitle(newRequestBody), newRequestBody.length());
@@ -126,7 +126,7 @@ public class Run {
                 }
             }
 
-            // 碰撞成功的日志输出
+            // host碰撞成功的日志输出
             if (collisionSuccessLogs.size() > 0) {
                 System.out.println(" ");
                 System.out.println(" ");
@@ -155,9 +155,9 @@ public class Run {
      * @return
      */
     private static String getCsvFilePath() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_");
-        String date = sdf.format(new Date()); // 格式化日期 date: 20200724
-        return "." + File.separator + date + CustomHelpers.randomStr(8) + ".csv";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sdf.format(new Date()); // 格式化日期 date: 2021-10-16
+        return "." + File.separator + date + "_" + CustomHelpers.randomStr(8) + ".csv";
     }
 
     /**
