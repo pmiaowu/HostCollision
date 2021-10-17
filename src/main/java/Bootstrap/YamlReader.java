@@ -15,7 +15,7 @@ public class YamlReader {
     private static Map<String, Map<String, Object>> properties = new HashMap<>();
 
     private YamlReader() {
-        String c = CustomHelpers.getResourcePath() + "config.yml";
+        String c = CustomHelpers.getResourcePath() + File.separator + "config.yml";
         try {
             File f = new File(c);
             properties = new Yaml().load(new FileInputStream(f));

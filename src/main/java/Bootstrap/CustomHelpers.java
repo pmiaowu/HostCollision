@@ -27,7 +27,7 @@ public class CustomHelpers {
         String path = System.getProperty("user.dir") + File.separator;
         if (!CustomHelpers.isStartupFromJar()) {
             path = path + "src" + File.separator + "main" + File.separator;
-            path = path + "resources" + File.separator;
+            path = path + "resources";
             return path;
         }
         return path;
@@ -39,7 +39,7 @@ public class CustomHelpers {
      * @return String
      */
     public static String getDataSourcePath() {
-        return getResourcePath() + "dataSource" + File.separator;
+        return getResourcePath() + File.separator + "dataSource" + File.separator;
     }
 
     /**
