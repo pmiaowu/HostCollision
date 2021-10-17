@@ -212,6 +212,9 @@ public class Run {
     private static HttpRequest sendHttpGetRequest(String protocol, String ip, String host) {
         String url = protocol + ip;
         HttpRequest request = HttpRequest.get(url);
+        request.trustAllCerts();
+        request.trustAllHosts();
+
         if (yamlReader.getBoolean("http.proxy.isStart")) {
             request.useProxy(
                     yamlReader.getString("http.proxy.host"),
