@@ -212,14 +212,13 @@ public class Run {
     private static HttpRequest sendHttpGetRequest(String protocol, String ip, String host) {
         String url = protocol + ip;
         HttpRequest request = HttpRequest.get(url);
-        request.trustAllCerts();
-        request.trustAllHosts();
-
         if (yamlReader.getBoolean("http.proxy.isStart")) {
             request.useProxy(
                     yamlReader.getString("http.proxy.host"),
                     yamlReader.getInteger("http.proxy.port"));
         }
+        request.trustAllCerts();
+        request.trustAllHosts();
         request.header("User-Agent", CustomHelpers.getRandomUserAgent());
         request.header("Accept", "*/*");
         if (host.length() > 0) {
