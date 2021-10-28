@@ -1,8 +1,5 @@
 package Bootstrap;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class DiffPage {
     /**
      * 返回经过过滤无用的数据以后两个字符串的相似度
@@ -21,63 +18,45 @@ public class DiffPage {
      * 返回经过过滤的页面内容，不包含脚本、样式和/或注释
      * 或所有HTML标签
      * 调用 getFilteredPageContent("<html><title>foobar</title></style><body>test</body></html>")
-     * 返回内容: foobar test
+     * 返回内容: foobartest
      *
-     * @param inputString
-     * @return textStr;
+     * @param htmlStr
+     * @return String
      */
-    public static String getFilteredPageContent(String inputString) {
-        if (inputString == null)
-            return null;
-        inputString = inputString.trim();
-        String htmlStr = inputString; // 含html标签的字符串
-        String textStr = "";
+    public static String getFilteredPageContent(String htmlStr) {
+        // 将实体字符串转义返回 如: "&lt;"="<", "&gt;"=">", "&quot;"="\"", "&nbsp;"=" ", "&amp;"="&"
+        htmlStr = htmlStr.replace("&lt;", "<");
+        htmlStr = htmlStr.replace("&gt;", ">");
+        htmlStr = htmlStr.replace("&quot;", "\"");
+        htmlStr = htmlStr.replace("&nbsp;", " ");
+        htmlStr = htmlStr.replace("&amp;", "&");
 
-        try {
-            //定义script的正则表达式{或<script[^>]*?>[\\s\\S]*?<\\/script>
-            String regEx_script = "<[\\s]*?script[^>]*?>[\\s\\S]*?<[\\s]*?\\/[\\s]*?script[\\s]*?>";
+        //定义script的正则表达式，去除js可以防止注入
+        String scriptRegex = "<script[^>]*?>[\\s\\S]*?<\\/script>";
+        //定义style的正则表达式，去除style样式，防止css代码过多时只截取到css样式代码
+        String styleRegex = "<style[^>]*?>[\\s\\S]*?<\\/style>";
+        //定义HTML标签的正则表达式，去除标签，只提取文字内容
+        String htmlRegex = "<[^>]+>";
+        // 定义一些特殊字符的正则表达式 如：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        String specialRegex1 = "\\&[a-zA-Z]{1,10};";
+        // 定义一些特殊字符的正则表达式 如：&#xe625;
+        String specialRegex2 = "\\&#[a-zA-Z0-9]{1,10};";
+        //定义空格,回车,换行符,制表符
+        String spaceRegex = "\\s*|\t|\r|\n";
 
-            //定义style的正则表达式{或<style[^>]*?>[\\s\\S]*?<\\/style>
-            String regEx_style = "<[\\s]*?style[^>]*?>[\\s\\S]*?<[\\s]*?\\/[\\s]*?style[\\s]*?>";
+        // 过滤script标签
+        htmlStr = htmlStr.replaceAll(scriptRegex, "");
+        // 过滤style标签
+        htmlStr = htmlStr.replaceAll(styleRegex, "");
+        // 过滤html标签
+        htmlStr = htmlStr.replaceAll(htmlRegex, "");
+        // 去除特殊字符
+        htmlStr = htmlStr.replaceAll(specialRegex1, "");
+        htmlStr = htmlStr.replaceAll(specialRegex2, "");
+        // 过滤空格等
+        htmlStr = htmlStr.replaceAll(spaceRegex, "");
 
-            // 定义HTML标签的正则表达式
-            String regEx_html = "<[^>]+>";
-
-            // 定义一些特殊字符的正则表达式 如：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            String regEx_special = "\\&[a-zA-Z]{1,10};";
-
-            // 过滤script标签
-            Pattern p_script = Pattern.compile(regEx_script, Pattern.CASE_INSENSITIVE);
-            Matcher m_script = p_script.matcher(htmlStr);
-            htmlStr = m_script.replaceAll("");
-
-            // 过滤style标签
-            Pattern p_style = Pattern.compile(regEx_style, Pattern.CASE_INSENSITIVE);
-            Matcher m_style = p_style.matcher(htmlStr);
-            htmlStr = m_style.replaceAll("");
-
-            // 过滤html标签
-            Pattern p_html = Pattern.compile(regEx_html, Pattern.CASE_INSENSITIVE);
-            Matcher m_html = p_html.matcher(htmlStr);
-            htmlStr = m_html.replaceAll("");
-
-            // 将实体字符串转义返回 如: "&lt;"="<", "&gt;"=">", "&quot;"="\"", "&nbsp;"=" ", "&amp;"="&"
-            htmlStr = htmlStr.replace("&lt;", "<");
-            htmlStr = htmlStr.replace("&gt;", ">");
-            htmlStr = htmlStr.replace("&quot;", "\"");
-            htmlStr = htmlStr.replace("&nbsp;", " ");
-            htmlStr = htmlStr.replace("&amp;", "&");
-
-            // 过滤特殊标签
-            Pattern p_special = Pattern.compile(regEx_special, Pattern.CASE_INSENSITIVE);
-            Matcher m_special = p_special.matcher(htmlStr);
-            htmlStr = m_special.replaceAll("");
-
-            textStr = htmlStr;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return textStr;// 返回文本字符串
+        return htmlStr.trim();
     }
 
     /**

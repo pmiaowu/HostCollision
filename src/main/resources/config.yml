@@ -25,6 +25,10 @@ http:
     # 用于判断是否启动 https 协议,进行 host 碰撞
     isScanHttps: true
 
+  # 绝对错误的host地址
+  # 没事不要改它, 实在要改也要改成一个绝对不可能解析的成功的地址
+  errorHost: "error.miaohosttest666666.com"
+
 # 相似度比例
 # 1 = 100%, 0.7 = 70%
 # 主要用来 host碰撞请求 对比 原请求 与 绝对host错误请求的相似度 超过多少会被认为不存在该问题
@@ -33,9 +37,22 @@ http:
 #   host碰撞请求 与 绝对host错误请求的 相似度超过0.7则认为不存在该问题
 similarityRatio: 0.7
 
-# host碰撞的数据来源
+# 程序运行的最大线程总数
+# 最小值为1, 小于等于0, 会重置为1
+# 注意:
+#   会自动根据输入的ip总数,来动态启动线程执行任务
+#   设置6的话,意思是最多可以开几个线程来执行任务的意思
+threadTotal: 6
+
+# host碰撞的数据来源地址
 dataSource:
-  # ip 数据来源
-  ipFilePath: "ipList.txt"
-  # host 数据来源
-  hostFilePath: "hostList.txt"
+  # ip 数据来源地址
+  ipFilePath: "./dataSource/ipList.txt"
+  # host 数据来源地址
+  hostFilePath: "./dataSource/hostList.txt"
+
+# 默认的结果输出格式
+# 格式有二种分别是 csv, txt
+defaultResultOutput:
+  isOutputCsv: true
+  isOutputTxt: true
