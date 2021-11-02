@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static String VERSION = "2.0.1";
+    private static String VERSION = "2.1.0";
 
     private static ProgramHelpers programHelpers;
 
@@ -60,11 +60,13 @@ public class Main {
 
         Options options = new Options();
         options.addOption("h", "help", false, "帮助");
-        options.addOption("sp", "scanProtocol", true, "允许的扫描协议<例如:http,https>");
+        options.addOption("sp", "scanProtocol", true, "允许的扫描协议,使用逗号分割<例如:http,https>");
         options.addOption("ifp", "ipFilePath", true, "ip数据来源地址<例如:./dataSource/ipList.txt>");
         options.addOption("hfp", "hostFilePath", true, "host数据来源地址<例如:./dataSource/hostList.txt>");
         options.addOption("t", "threadTotal", true, "程序运行的最大线程总数<例如:6>");
         options.addOption("o", "output", true, "导出格式,使用逗号分割<例如:csv,txt>");
+        options.addOption("ioel", "isOutputErrorLog", true, "是否将错误日志输出<例如:true/false>");
+        options.addOption("cssc", "collisionSuccessStatusCode", true, "认为碰撞成功的状态码,使用逗号分割<例如: 200,301,302>");
 
         CommandLine commandLine = parser.parse(options, args);
         return commandLine;
@@ -87,12 +89,14 @@ public class Main {
      */
     private static void help() {
         System.out.println("=======================使 用 文 档=======================");
-        System.out.println("-h/-help            使用文档");
-        System.out.println("-sp/-scanProtocol   允许的扫描协议<例如:http,https>");
-        System.out.println("-ifp/-ipFilePath    ip数据来源地址<例如:./dataSource/ipList.txt>");
-        System.out.println("-hfp/-hostFilePath  host数据来源地址<例如:./dataSource/hostList.txt>");
-        System.out.println("-t/-threadTotal     程序运行的最大线程总数<例如:6>");
-        System.out.println("-o/-output          导出格式,使用逗号分割<例如:csv,txt>");
+        System.out.println("-h/-help                            使用文档");
+        System.out.println("-sp/-scanProtocol                   允许的扫描协议<例如:http,https>");
+        System.out.println("-ifp/-ipFilePath                    ip数据来源地址<例如:./dataSource/ipList.txt>");
+        System.out.println("-hfp/-hostFilePath                  host数据来源地址<例如:./dataSource/hostList.txt>");
+        System.out.println("-t/-threadTotal                     程序运行的最大线程总数<例如:6>");
+        System.out.println("-o/-output                          导出格式,使用逗号分割<例如:csv,txt>");
+        System.out.println("-ioel/-isOutputErrorLog             是否将错误日志输出<例如:true/false>");
+        System.out.println("-cssc/-collisionSuccessStatusCode   认为碰撞成功的状态码,使用逗号分割<例如: 200,301,302>");
     }
 
     /**

@@ -169,11 +169,11 @@ public class ProgramHelpers {
             String sp = commandLine.getOptionValue("sp");
             String[] spArr = sp.trim().toLowerCase().split(",");
             for (String s : spArr) {
-                if (s.equals("http")) {
+                if (s.trim().equals("http")) {
                     protocols.add("http://");
                 }
 
-                if (s.equals("https")) {
+                if (s.trim().equals("https")) {
                     protocols.add("https://");
                 }
             }
@@ -218,5 +218,46 @@ public class ProgramHelpers {
         request.readTimeout(yamlReader.getInteger("http.readTimeout") * 1000);
         request.connectTimeout(yamlReader.getInteger("http.connectTimeout") * 1000);
         return request;
+    }
+
+    /**
+     * 是否将错误日志输出
+     *
+     * @return Boolean
+     */
+    public Boolean isOutputErrorLog() {
+        if (commandLine.hasOption("ioel")) {
+            String ioel = commandLine.getOptionValue("ioel").trim().toLowerCase();
+            if (ioel.equals("false")) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return yamlReader.getBoolean("isOutputErrorLog");
+    }
+
+    /**
+     * 获取认为碰撞成功的状态码列表
+     *
+     * @return List<String>
+     */
+    public List<String> getCollisionSuccessStatusCode() {
+        List<String> statusCodeList = new ArrayList();
+
+        String[] csscArr;
+        if (commandLine.hasOption("cssc")) {
+            csscArr = commandLine.getOptionValue("cssc").trim().toLowerCase().split(",");
+        } else {
+            csscArr = yamlReader.getString("collisionSuccessStatusCode").trim().toLowerCase().split(",");
+        }
+
+        for (String cssc : csscArr) {
+            if (cssc.trim().length() > 0) {
+                statusCodeList.add(cssc.trim());
+            }
+        }
+
+        return statusCodeList;
     }
 }
