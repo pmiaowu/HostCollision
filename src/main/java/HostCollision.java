@@ -42,11 +42,11 @@ public class HostCollision implements Runnable {
                     HttpRequest errorHostRequest = programHelpers.sendHttpGetRequest(protocol, ip, programHelpers.getErrorHost());
 
                     String baseRequestBody = baseRequest.body();
-                    String baseRequestContent = DiffPage.getFilteredPageContent(baseRequestBody);
+                    String baseRequestContent = DiffPage.getFilteredPageContent(baseRequestBody.replace(ip,""));
                     Integer baseRequestLength = baseRequestBody.length();
 
                     String errorHostRequestBody = errorHostRequest.body();
-                    String errorHostRequestContent = DiffPage.getFilteredPageContent(errorHostRequestBody);
+                    String errorHostRequestContent = DiffPage.getFilteredPageContent(errorHostRequestBody.replace(programHelpers.getErrorHost(),""));
                     Integer errorHostRequestLength = errorHostRequestBody.length();
 
                     for (String host : hostList) {
@@ -57,7 +57,7 @@ public class HostCollision implements Runnable {
                             HttpRequest newRequest = programHelpers.sendHttpGetRequest(protocol, ip, host);
 
                             String newRequestBody = newRequest.body();
-                            String newRequestContent = DiffPage.getFilteredPageContent(newRequestBody);
+                            String newRequestContent = DiffPage.getFilteredPageContent(newRequestBody.replace(host,""));
                             Integer newRequestLength = newRequestBody.length();
 
                             // 进行简单的内容匹配
