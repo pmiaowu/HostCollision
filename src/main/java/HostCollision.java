@@ -42,11 +42,13 @@ public class HostCollision implements Runnable {
                     HttpRequest errorHostRequest = programHelpers.sendHttpGetRequest(protocol, ip, programHelpers.getErrorHost());
 
                     String baseRequestBody = baseRequest.body();
-                    String baseRequestContent = DiffPage.getFilteredPageContent(baseRequestBody.replace(ip, ""));
+                    String baseRequestBodyFormat = baseRequestBody.replace(ip, "");
+                    String baseRequestContent = DiffPage.getFilteredPageContent(baseRequestBodyFormat);
                     Integer baseRequestLength = baseRequest.contentLength();
 
                     String errorHostRequestBody = errorHostRequest.body();
-                    String errorHostRequestContent = DiffPage.getFilteredPageContent(errorHostRequestBody.replace(programHelpers.getErrorHost(), ""));
+                    String errorHostRequestBodyFormat = errorHostRequestBody.replace(programHelpers.getErrorHost(), "");
+                    String errorHostRequestContent = DiffPage.getFilteredPageContent(errorHostRequestBodyFormat);
                     Integer errorHostRequestLength = errorHostRequest.contentLength();
 
                     for (String host : hostList) {
@@ -57,7 +59,8 @@ public class HostCollision implements Runnable {
                             HttpRequest newRequest = programHelpers.sendHttpGetRequest(protocol, ip, host);
 
                             String newRequestBody = newRequest.body();
-                            String newRequestContent = DiffPage.getFilteredPageContent(newRequestBody.replace(host, ""));
+                            String newRequestBodyFormat = newRequestBody.replace(host, "");
+                            String newRequestContent = DiffPage.getFilteredPageContent(newRequestBodyFormat);
                             Integer newRequestLength = newRequest.contentLength();
 
                             // 进行简单的内容匹配
@@ -81,8 +84,8 @@ public class HostCollision implements Runnable {
                             }
 
                             // 相似度匹配
-                            double htmlSimilarityRatio1 = DiffPage.getRatio(baseRequestBody, newRequestBody);
-                            double htmlSimilarityRatio2 = DiffPage.getRatio(errorHostRequestBody, newRequestBody);
+                            double htmlSimilarityRatio1 = DiffPage.getRatio(baseRequestBodyFormat, newRequestBodyFormat);
+                            double htmlSimilarityRatio2 = DiffPage.getRatio(errorHostRequestBodyFormat, newRequestBodyFormat);
                             if (htmlSimilarityRatio1 >= programHelpers.getSimilarityRatio()) {
                                 if (programHelpers.isOutputErrorLog()) {
                                     String str = String.format("协议:%s, ip:%s, host:%s 匹配失败", protocol, ip, host);
