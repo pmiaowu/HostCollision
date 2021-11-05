@@ -260,4 +260,13 @@ public class ProgramHelpers {
 
         return statusCodeList;
     }
+
+    /**
+     * 获取相对主机名
+     *
+     * @return String
+     */
+    public String getRelativeHostName() {
+        return yamlReader.getString("http.relativeHostName");
+    }
 }

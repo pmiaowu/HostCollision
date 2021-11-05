@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static String VERSION = "2.1.1";
+    private static String VERSION = "2.1.2";
 
     private static ProgramHelpers programHelpers;
 
@@ -163,7 +163,7 @@ public class Main {
                 // 写入csv表头
                 String[] headers = {
                         "协议", "ip", "host", "标题",
-                        "匹配成功的数据包大小", "原始的数据包大小", "绝对错误的数据包大小"};
+                        "匹配成功的数据包大小", "原始的数据包大小", "绝对错误的数据包大小", "相对错误的数据包大小"};
                 csvWriter.writeRecord(headers);
             } catch (IOException e) {
                 System.out.println(" ");
@@ -258,7 +258,8 @@ public class Main {
                                 collisionSuccessList.get(i).get(3),
                                 collisionSuccessList.get(i).get(4),
                                 collisionSuccessList.get(i).get(5),
-                                collisionSuccessList.get(i).get(6)};
+                                collisionSuccessList.get(i).get(6),
+                                collisionSuccessList.get(i).get(7)};
                         try {
                             csvWriter.writeRecord(data);
                         } catch (IOException e) {
