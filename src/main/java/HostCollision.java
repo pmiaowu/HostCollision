@@ -38,23 +38,28 @@ public class HostCollision implements Runnable {
         for (String ip : ipList) {
             for (String protocol : scanProtocols) {
                 try {
+                    // 基础请求
                     HttpRequest baseRequest = programHelpers.sendHttpGetRequest(protocol, ip, "");
-                    HttpRequest errorHostRequest = programHelpers.sendHttpGetRequest(protocol, ip, programHelpers.getErrorHost());
 
-                    String baseRequestBody = baseRequest.body();
+                    Integer baseRequestLength = baseRequest.contentLength();
+                    String baseRequestLocation = baseRequest.location();
+                    String baseRequestBody = getBody(baseRequest);
+                    String baseRequestTitle = CustomHelpers.getBodyTitle(baseRequestBody);
                     String baseRequestBodyFormat = baseRequestBody.replace(ip, "");
                     String baseRequestContent = DiffPage.getFilteredPageContent(baseRequestBodyFormat);
-                    String baseRequestTitle = CustomHelpers.getBodyTitle(baseRequestBody);
-                    Integer baseRequestLength = baseRequest.contentLength();
 
-                    String errorHostRequestBody = errorHostRequest.body();
+                    // 绝对错误请求
+                    HttpRequest errorHostRequest = programHelpers.sendHttpGetRequest(protocol, ip, programHelpers.getErrorHost());
+
+                    Integer errorHostRequestLength = errorHostRequest.contentLength();
+                    String errorHostRequestLocation = errorHostRequest.location();
+                    String errorHostRequestBody = getBody(errorHostRequest);
+                    String errorHostRequestTitle = CustomHelpers.getBodyTitle(errorHostRequestBody);
                     String errorHostRequestBodyFormat = errorHostRequestBody.replace(programHelpers.getErrorHost(), "");
                     String errorHostRequestContent = DiffPage.getFilteredPageContent(errorHostRequestBodyFormat);
-                    String errorHostRequestTitle = CustomHelpers.getBodyTitle(errorHostRequestBody);
-                    Integer errorHostRequestLength = errorHostRequest.contentLength();
 
                     // 请求长度判断
-                    if (baseRequestLength <= 0) {
+                    if (baseRequestLocation == null && baseRequestLength <= 0) {
                         requestStatistics.add("numOfRequest", hostList.size());
                         if (programHelpers.isOutputErrorLog()) {
                             String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为:%s 有异常,不进行碰撞",
@@ -63,7 +68,8 @@ public class HostCollision implements Runnable {
                         }
                         continue;
                     }
-                    if (errorHostRequestLength <= 0) {
+
+                    if (errorHostRequestLocation == null && errorHostRequestLength <= 0) {
                         requestStatistics.add("numOfRequest", hostList.size());
                         if (programHelpers.isOutputErrorLog()) {
                             String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为:%s 有异常,不进行碰撞",
@@ -78,23 +84,28 @@ public class HostCollision implements Runnable {
 
                         // 正式进行host碰撞
                         try {
+                            // 真正的碰撞请求
                             HttpRequest newRequest = programHelpers.sendHttpGetRequest(protocol, ip, host);
-                            HttpRequest newRequest2 = programHelpers.sendHttpGetRequest(protocol, ip, programHelpers.getRelativeHostName() + host);
 
-                            String newRequestBody = newRequest.body();
+                            Integer newRequestLength = newRequest.contentLength();
+                            String newRequestLocation = newRequest.location();
+                            String newRequestBody = getBody(newRequest);
+                            String newRequestTitle = CustomHelpers.getBodyTitle(newRequestBody);
                             String newRequestBodyFormat = newRequestBody.replace(host, "");
                             String newRequestContent = DiffPage.getFilteredPageContent(newRequestBodyFormat);
-                            String newRequestTitle = CustomHelpers.getBodyTitle(newRequestBody);
-                            Integer newRequestLength = newRequest.contentLength();
 
-                            String newRequest2Body = newRequest2.body();
+                            // 相对错误请求
+                            HttpRequest newRequest2 = programHelpers.sendHttpGetRequest(protocol, ip, programHelpers.getRelativeHostName() + host);
+
+                            Integer newRequest2Length = newRequest2.contentLength();
+                            String newRequest2Location = newRequest2.location();
+                            String newRequest2Body = getBody(newRequest2);
+                            String newRequest2Title = CustomHelpers.getBodyTitle(newRequest2Body);
                             String newRequest2BodyFormat = newRequest2Body.replace(host, "");
                             String newRequest2Content = DiffPage.getFilteredPageContent(newRequest2BodyFormat);
-                            String newRequest2Title = CustomHelpers.getBodyTitle(newRequest2Body);
-                            Integer newRequest2Length = newRequest2.contentLength();
 
                             // 请求长度判断
-                            if (newRequestLength <= 0) {
+                            if (newRequestLocation == null && newRequestLength <= 0) {
                                 if (programHelpers.isOutputErrorLog()) {
                                     String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为:%s 有异常,不进行碰撞",
                                             protocol, ip, host, newRequestLength);
@@ -102,7 +113,7 @@ public class HostCollision implements Runnable {
                                 }
                                 continue;
                             }
-                            if (newRequest2Length <= 0) {
+                            if (newRequest2Location == null && newRequest2Length <= 0) {
                                 if (programHelpers.isOutputErrorLog()) {
                                     String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为:%s 有异常,不进行碰撞",
                                             protocol, ip, host, newRequest2Length);
@@ -158,23 +169,31 @@ public class HostCollision implements Runnable {
                                 data.add(ip);
                                 data.add(host);
                                 data.add(newRequestTitle);
+
                                 data.add(String.valueOf(newRequestLength));
                                 data.add(String.valueOf(baseRequestLength));
                                 data.add(String.valueOf(errorHostRequestLength));
                                 data.add(String.valueOf(newRequest2Length));
+
+                                data.add(String.valueOf(newRequest.code()));
+                                data.add(String.valueOf(baseRequest.code()));
+                                data.add(String.valueOf(errorHostRequest.code()));
+                                data.add(String.valueOf(newRequest2.code()));
 
                                 // 保存host碰撞成功的数据
                                 collisionSuccessList.add(data);
 
                                 // 实时输出host碰撞成功的日志数据
                                 String successLog = String.format(
-                                        "协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s 匹配成功",
-                                        protocol, ip, host, newRequestTitle, newRequestLength);
+                                        "协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s, 状态码:%s 匹配成功",
+                                        protocol, ip, host, newRequestTitle, newRequestLength, newRequest.code());
                                 System.out.println(successLog);
                             } else {
-                                String str = String.format("协议:%s, ip:%s, host:%s, title:%s 不是白名单状态码,忽略处理",
-                                        protocol, ip, host, newRequestTitle);
-                                System.out.println(str);
+                                if (programHelpers.isOutputErrorLog()) {
+                                    String str = String.format("协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s, 状态码:%s 不是白名单状态码,忽略处理",
+                                            protocol, ip, host, newRequestTitle, newRequestLength, newRequest.code());
+                                    System.out.println(str);
+                                }
                             }
                         } catch (HttpRequest.HttpRequestException hre) {
                             if (programHelpers.isOutputErrorLog()) {
@@ -214,5 +233,25 @@ public class HostCollision implements Runnable {
         }
 
         return false;
+    }
+
+    /**
+     * 获取请求body
+     *
+     * @param request
+     * @return String
+     */
+    private String getBody(HttpRequest request) {
+        String body;
+        String requestLocation = request.location();
+        Integer requestLength = request.contentLength();
+
+        if (requestLocation != null && requestLength <= 0) {
+            body = requestLocation;
+        } else {
+            body = request.body();
+        }
+
+        return body;
     }
 }

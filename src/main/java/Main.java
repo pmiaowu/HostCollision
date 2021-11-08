@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static String VERSION = "2.1.2";
+    private static String VERSION = "2.1.3";
 
     private static ProgramHelpers programHelpers;
 
@@ -163,7 +163,8 @@ public class Main {
                 // 写入csv表头
                 String[] headers = {
                         "协议", "ip", "host", "标题",
-                        "匹配成功的数据包大小", "原始的数据包大小", "绝对错误的数据包大小", "相对错误的数据包大小"};
+                        "匹配成功的数据包大小", "原始的数据包大小", "绝对错误的数据包大小", "相对错误的数据包大小",
+                        "匹配成功的数据包状态码", "原始的数据包状态码", "绝对错误的数据包状态码", "相对错误的数据包状态码"};
                 csvWriter.writeRecord(headers);
             } catch (IOException e) {
                 System.out.println(" ");
@@ -259,7 +260,11 @@ public class Main {
                                 collisionSuccessList.get(i).get(4),
                                 collisionSuccessList.get(i).get(5),
                                 collisionSuccessList.get(i).get(6),
-                                collisionSuccessList.get(i).get(7)};
+                                collisionSuccessList.get(i).get(7),
+                                collisionSuccessList.get(i).get(8),
+                                collisionSuccessList.get(i).get(9),
+                                collisionSuccessList.get(i).get(10),
+                                collisionSuccessList.get(i).get(11)};
                         try {
                             csvWriter.writeRecord(data);
                         } catch (IOException e) {
@@ -304,9 +309,9 @@ public class Main {
                     if (collisionSuccessList.size() > 0) {
                         for (List<String> log : collisionSuccessList) {
                             String successLog = String.format(
-                                    "协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s 匹配成功",
+                                    "协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s, 状态码:%s 匹配成功",
                                     log.get(0), log.get(1), log.get(2),
-                                    log.get(3), log.get(4));
+                                    log.get(3), log.get(4), log.get(8));
                             System.out.println(successLog);
                         }
                     } else {
