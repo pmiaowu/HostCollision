@@ -1,7 +1,7 @@
 import Bootstrap.ConsoleProgressBar;
 import Bootstrap.CustomHelpers;
 import Bootstrap.ProgramHelpers;
-import Bootstrap.RequestStatistics;
+import Bootstrap.Statistics;
 import com.csvreader.CsvWriter;
 import org.apache.commons.cli.*;
 
@@ -14,12 +14,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static String VERSION = "2.1.3";
+    private static String VERSION = "2.1.4";
 
     private static ProgramHelpers programHelpers;
 
-    // 用于多线程下 统计发送请求 的类
-    private static RequestStatistics requestStatistics = new RequestStatistics();
+    // 用于多线程下 统计各种数据个数 的类
+    private static Statistics statistics = new Statistics();
 
     // 保存着所有碰撞成功的数据
     private static List<List<String>> collisionSuccessList = Collections.synchronizedList(new ArrayList<>());
@@ -103,58 +103,51 @@ public class Main {
      * 程序初始化操作
      */
     private static void init(String[] args) throws ParseException {
-        // 初始化 - 请求数设置为0
-        requestStatistics.add("numOfRequest", 0);
-
         CommandLine commandLine = getCommandLine(args);
+
         if (commandLine.hasOption("h")) {
             help();
             System.exit(0);
         }
+
+        // 初始化 - 请求数设置为0
+        statistics.add("numOfRequest", 0);
 
         programHelpers = new ProgramHelpers(commandLine);
 
         scanProtocols = programHelpers.getScanProtocols();
 
         isOutputCsv = programHelpers.isOutputCsv();
+
         isOutputTxt = programHelpers.isOutputTxt();
 
         try {
             ipData = CustomHelpers.getFileData(programHelpers.getIpPath()).trim();
             hostData = CustomHelpers.getFileData(programHelpers.getHostPath()).trim();
-
-            if (scanProtocols.size() == 0) {
-                System.out.println(" ");
-                System.out.println("扫描协议空, 退出程序 :(");
-                System.exit(0);
-            }
-
-            if (ipData.length() == 0) {
-                System.out.println(" ");
-                System.out.println("error: ip数据来源, 获取为空数据, 退出程序 :(");
-                System.exit(0);
-            }
-
-            if (hostData.length() == 0) {
-                System.out.println(" ");
-                System.out.println("error: host数据来源, 获取为空数据, 退出程序 :(");
-                System.exit(0);
-            }
         } catch (IOException e) {
             System.out.println(" ");
             System.out.println("error: 文件读/写出错 :(");
             e.printStackTrace();
             System.exit(0);
         }
-    }
 
-    /**
-     * 程序运行的入口函数
-     */
-    private static void run() {
-        // 控制台进度条类
-        Integer requestTotal = (getIpList().size() * scanProtocols.size() * getHostList().size());
-        ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(0, requestTotal);
+        if (scanProtocols.size() == 0) {
+            System.out.println(" ");
+            System.out.println("扫描协议空, 退出程序 :(");
+            System.exit(0);
+        }
+
+        if (ipData.length() == 0) {
+            System.out.println(" ");
+            System.out.println("error: ip数据来源, 获取为空数据, 退出程序 :(");
+            System.exit(0);
+        }
+
+        if (hostData.length() == 0) {
+            System.out.println(" ");
+            System.out.println("error: host数据来源, 获取为空数据, 退出程序 :(");
+            System.exit(0);
+        }
 
         // 创建csv实例
         if (isOutputCsv) {
@@ -170,7 +163,7 @@ public class Main {
                 System.out.println(" ");
                 System.out.println("error: csv文件写入表头出错 :(");
                 e.printStackTrace();
-                return;
+                System.exit(0);
             }
         }
 
@@ -183,9 +176,18 @@ public class Main {
                 System.out.println(" ");
                 System.out.println("error: txt创建失败 :(");
                 e.printStackTrace();
-                return;
+                System.exit(0);
             }
         }
+    }
+
+    /**
+     * 程序运行的入口函数
+     */
+    private static void run() {
+        // 控制台进度条类
+        Integer requestTotal = (getIpList().size() * scanProtocols.size() * getHostList().size());
+        ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(0, requestTotal);
 
         // 在程序准备退出时执行
         // ps: 就放这里别动,放这里挺好的,环境优美
@@ -214,7 +216,7 @@ public class Main {
                     new Thread(
                             new HostCollision(
                                     programHelpers,
-                                    requestStatistics,
+                                    statistics,
                                     collisionSuccessList,
                                     scanProtocols,
                                     ipList,
@@ -242,9 +244,9 @@ public class Main {
             // 监控线程/处理数据
             while (true) {
                 // 显示当前进度
-                if (requestStatistics.getData("numOfRequest") != oldNumOfRequest) {
-                    oldNumOfRequest = requestStatistics.getData("numOfRequest");
-                    consoleProgressBar.show(requestStatistics.getData("numOfRequest"));
+                if (statistics.getData("numOfRequest") != oldNumOfRequest) {
+                    oldNumOfRequest = statistics.getData("numOfRequest");
+                    consoleProgressBar.show(statistics.getData("numOfRequest"));
                     System.out.println(" ");
                 }
 
@@ -282,12 +284,13 @@ public class Main {
                         for (int i = txtIndex; i < collisionSuccessList.size(); i++) {
                             txtIndex++;
                             String data = String.format(
-                                    "协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s 匹配成功 \r\n",
+                                    "协议:%s, ip:%s, host:%s, title:%s, 匹配成功的数据包大小:%s, 状态码:%s 匹配成功 \r\n",
                                     collisionSuccessList.get(i).get(0),
                                     collisionSuccessList.get(i).get(1),
                                     collisionSuccessList.get(i).get(2),
                                     collisionSuccessList.get(i).get(3),
-                                    collisionSuccessList.get(i).get(4));
+                                    collisionSuccessList.get(i).get(4),
+                                    collisionSuccessList.get(i).get(8));
                             txtWriter.write(data);
                         }
                     } catch (IOException e) {

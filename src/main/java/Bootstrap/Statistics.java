@@ -3,10 +3,10 @@ package Bootstrap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RequestStatistics {
+public class Statistics {
     private ConcurrentHashMap stringMap;
 
-    public RequestStatistics() {
+    public Statistics() {
         this.stringMap = new ConcurrentHashMap<String, Integer>();
     }
 

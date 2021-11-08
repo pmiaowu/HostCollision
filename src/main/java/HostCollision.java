@@ -1,7 +1,7 @@
 import Bootstrap.CustomHelpers;
 import Bootstrap.DiffPage;
 import Bootstrap.ProgramHelpers;
-import Bootstrap.RequestStatistics;
+import Bootstrap.Statistics;
 import com.github.kevinsawicki.http.HttpRequest;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 public class HostCollision implements Runnable {
     private ProgramHelpers programHelpers;
 
-    private RequestStatistics requestStatistics;
+    private Statistics statistics;
 
     private List<List<String>> collisionSuccessList;
 
@@ -20,13 +20,13 @@ public class HostCollision implements Runnable {
 
     public HostCollision(
             ProgramHelpers programHelpers,
-            RequestStatistics requestStatistics,
+            Statistics statistics,
             List<List<String>> collisionSuccessList,
             List<String> scanProtocols,
             List<String> ipList,
             List<String> hostList) {
         this.programHelpers = programHelpers;
-        this.requestStatistics = requestStatistics;
+        this.statistics = statistics;
         this.collisionSuccessList = collisionSuccessList;
         this.scanProtocols = scanProtocols;
         this.ipList = ipList;
@@ -60,7 +60,7 @@ public class HostCollision implements Runnable {
 
                     // 请求长度判断
                     if (baseRequestLocation == null && baseRequestLength <= 0) {
-                        requestStatistics.add("numOfRequest", hostList.size());
+                        statistics.add("numOfRequest", hostList.size());
                         if (programHelpers.isOutputErrorLog()) {
                             String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为:%s 有异常,不进行碰撞",
                                     protocol, ip, ip, baseRequestLength);
@@ -70,7 +70,7 @@ public class HostCollision implements Runnable {
                     }
 
                     if (errorHostRequestLocation == null && errorHostRequestLength <= 0) {
-                        requestStatistics.add("numOfRequest", hostList.size());
+                        statistics.add("numOfRequest", hostList.size());
                         if (programHelpers.isOutputErrorLog()) {
                             String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为:%s 有异常,不进行碰撞",
                                     protocol, ip, programHelpers.getErrorHost(), errorHostRequestLength);
@@ -80,7 +80,7 @@ public class HostCollision implements Runnable {
                     }
 
                     for (String host : hostList) {
-                        requestStatistics.add("numOfRequest", 1);
+                        statistics.add("numOfRequest", 1);
 
                         // 正式进行host碰撞
                         try {
@@ -204,7 +204,7 @@ public class HostCollision implements Runnable {
                         }
                     }
                 } catch (HttpRequest.HttpRequestException hre) {
-                    requestStatistics.add("numOfRequest", hostList.size());
+                    statistics.add("numOfRequest", hostList.size());
                     if (programHelpers.isOutputErrorLog()) {
                         String str = String.format("error: 站点 %s 访问失败,不进行host碰撞", protocol + ip);
                         System.out.println(str);
