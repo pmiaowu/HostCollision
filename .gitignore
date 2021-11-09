@@ -3,6 +3,8 @@
 .settings
 .classpath
 .project
+*.csv
+*.txt
 out
 target
 HostCollision.iml
