@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static String VERSION = "2.1.4";
+    private static String VERSION = "2.1.5";
 
     private static ProgramHelpers programHelpers;
 
@@ -185,11 +185,8 @@ public class Main {
      * 程序运行的入口函数
      */
     private static void run() {
-        // 控制台进度条类
-        Integer requestTotal = (getIpList().size() * scanProtocols.size() * getHostList().size());
-        ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(0, requestTotal);
-
         // 在程序准备退出时执行
+        // JVM销毁前执行的一个线程,需要提前启动这个钩子
         // ps: 就放这里别动,放这里挺好的,环境优美
         Thread t = new Thread(() -> {
             if (isOutputCsv) {
@@ -205,8 +202,13 @@ public class Main {
                     e.printStackTrace();
                 }
             }
+            System.out.println("程序安全退出 :)");
         });
         Runtime.getRuntime().addShutdownHook(t);
+
+        // 控制台进度条类
+        Integer requestTotal = (getIpList().size() * scanProtocols.size() * getHostList().size());
+        ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(0, requestTotal);
 
         // 建立线程池
         System.out.println("=======================建 立 线 程 池=======================");
