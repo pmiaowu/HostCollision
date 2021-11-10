@@ -4,6 +4,7 @@ import Bootstrap.ProgramHelpers;
 import Bootstrap.Statistics;
 import com.github.kevinsawicki.http.HttpRequest;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -247,7 +248,12 @@ public class HostCollision implements Runnable {
         Integer requestLength = request.contentLength();
 
         if (requestLocation != null && requestLength <= 0) {
-            body = requestLocation;
+            try {
+                URL url = new URL(requestLocation);
+                body = url.getProtocol() + "://" + url.getHost();
+            } catch (Exception e) {
+                body = requestLocation;
+            }
         } else {
             body = request.body();
         }
