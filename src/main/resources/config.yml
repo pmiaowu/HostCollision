@@ -81,10 +81,14 @@ blacklists:
   # http请求,body的黑名单列表
   httpBodies:
     - "document.getElementById(\"mainFrame\").src=\"http://batit.aliyun.com/alww.html\";"
-    - "<title>服务器安全狗防护验证页面</title>"
+    - "服务器安全狗防护验证页面"
     - "该网站暂时无法进行访问，可能由以下原因导致"
     - "本网站尚未进行备案"
     - "重获备案号后，如何恢复访问"
+    - "您的请求在Web服务器中没有找到对应的站点"
+    - "检查是否已经绑定到对应站点，若确认已绑定，请尝试重载Web服务"
+    - "您没有将此域名或IP绑定到对应站点"
+    - "若您使用了CDN产品，请尝试清除CDN缓存"
   # http请求,header头,X-Powered-By字段的黑名单列表
   httpXPoweredBy:
     - "waf"
