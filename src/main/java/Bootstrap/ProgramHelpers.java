@@ -222,7 +222,10 @@ public class ProgramHelpers {
         }
         request.readTimeout(yamlReader.getInteger("http.readTimeout") * 1000);
         request.connectTimeout(yamlReader.getInteger("http.connectTimeout") * 1000);
-        return new HttpCustomRequest(request, host);
+        if (host.length() > 0) {
+            return new HttpCustomRequest(request, host);
+        }
+        return new HttpCustomRequest(request, ip);
     }
 
     /**

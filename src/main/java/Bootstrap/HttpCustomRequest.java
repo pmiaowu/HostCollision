@@ -71,7 +71,7 @@ public class HttpCustomRequest {
     }
 
     public String filteredPageContent() {
-        return bodyFormat();
+        return DiffPage.getFilteredPageContent(bodyFormat());
     }
 
     public String header(String name) {
