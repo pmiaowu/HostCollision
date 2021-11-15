@@ -58,7 +58,7 @@ jar包地址: /HostCollision/target/HostCollision/HostCollision.jar
 
 HostCollision % java -jar HostCollision.jar -h
 =======================基 本 信 息=======================
-版本: 2.1.0
+版本: 2.2.0
 下载地址: https://github.com/pmiaowu/HostCollision
 请尽情享用本程序吧 ヾ(≧▽≦*)o
 =======================使 用 文 档=======================
@@ -68,8 +68,9 @@ HostCollision % java -jar HostCollision.jar -h
 -hfp/-hostFilePath                  host数据来源地址<例如:./dataSource/hostList.txt>
 -t/-threadTotal                     程序运行的最大线程总数<例如:6>
 -o/-output                          导出格式,使用逗号分割<例如:csv,txt>
--ioel/-isOutputErrorLog             是否将错误日志输出<例如:true/false>
+-ioel/-isOutputErrorLog             是否将错误日志输出<例如:true 输出/false 关闭>
 -cssc/-collisionSuccessStatusCode   认为碰撞成功的状态码,使用逗号分割<例如: 200,301,302>
+-dsn/-dataSampleNumber              数据样本请求次数,小于等于0,表示关闭该功能
 ```
 
 ## 0x04.2 基础使用方法

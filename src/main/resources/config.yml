@@ -27,7 +27,7 @@ http:
 
   # 绝对错误的host地址
   # 没事不要改它, 实在要改也要改成一个绝对不可能解析的成功的地址
-  errorHost: "error.miaohosttest666666.com"
+  errorHost: "error.hchostjwdlh666666.com"
 
   # 相对主机名
   # 没事也不用改它, 拿来做二次匹配的
@@ -70,3 +70,31 @@ isOutputErrorLog: true
 # 为空表示关闭该功能
 # 注: 开启该功能可以在某些场景获得更好的体验
 collisionSuccessStatusCode: "200,301,302"
+
+# 黑名单相关配置
+# 该功能是用于简单的识别waf而产生的,本质上也是为了减少误报
+# 经过实战的使用,发现大厂中对于host碰撞是会有waf进行干扰的,因此需要添加该配置识别waf的一些特征,减少误报
+blacklists:
+  # http请求,header头,Service字段的黑名单列表
+  httpServices:
+    - "waf"
+  # http请求,body的黑名单列表
+  httpBodies:
+    - "document.getElementById(\"mainFrame\").src=\"http://batit.aliyun.com/alww.html\";"
+    - "<title>服务器安全狗防护验证页面</title>"
+    - "该网站暂时无法进行访问，可能由以下原因导致"
+    - "本网站尚未进行备案"
+    - "重获备案号后，如何恢复访问"
+  # http请求,header头,X-Powered-By字段的黑名单列表
+  httpXPoweredBy:
+    - "waf"
+
+# 数据样本
+# 该功能是用于加强host碰撞的检测功能而生的,开启以后可以有效的减少误报问题
+# 主要是用来防止一个相同的站点里面有,大于一个以上不同的返回值,而导致的误报问题
+dataSample:
+  # 样本请求次数
+  # 最小值为0, 小于等于0, 表示关闭该功能
+  # 程序将会拿该参数,请求n次作为数据的匹配样本
+  # 建议: 建议设置为10次或是以上,因为如果样本少了,那么就没有任何的意义
+  number: 10

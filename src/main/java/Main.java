@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static String VERSION = "2.1.6";
+    private static String VERSION = "2.2.0";
 
     private static ProgramHelpers programHelpers;
 
@@ -50,6 +50,18 @@ public class Main {
     }
 
     /**
+     * 基本信息输出
+     */
+    private static String basicInformationOutput() {
+        String str1 = "=======================基 本 信 息=======================\n";
+        String str2 = String.format("版本: %s\n", VERSION);
+        String str3 = String.format("下载地址: %s\n", "https://github.com/pmiaowu/HostCollision");
+        String str4 = "请尽情享用本程序吧 ヾ(≧▽≦*)o";
+        String detail = str1 + str2 + str3 + str4;
+        return detail;
+    }
+
+    /**
      * 获取命令行参数
      *
      * @param args
@@ -65,23 +77,12 @@ public class Main {
         options.addOption("hfp", "hostFilePath", true, "host数据来源地址<例如:./dataSource/hostList.txt>");
         options.addOption("t", "threadTotal", true, "程序运行的最大线程总数<例如:6>");
         options.addOption("o", "output", true, "导出格式,使用逗号分割<例如:csv,txt>");
-        options.addOption("ioel", "isOutputErrorLog", true, "是否将错误日志输出<例如:true/false>");
+        options.addOption("ioel", "isOutputErrorLog", true, "是否将错误日志输出<例如:true 输出/false 关闭>");
         options.addOption("cssc", "collisionSuccessStatusCode", true, "认为碰撞成功的状态码,使用逗号分割<例如: 200,301,302>");
+        options.addOption("dsn", "dataSampleNumber", true, "数据样本请求次数,小于等于0,表示关闭该功能");
 
         CommandLine commandLine = parser.parse(options, args);
         return commandLine;
-    }
-
-    /**
-     * 基本信息输出
-     */
-    private static String basicInformationOutput() {
-        String str1 = "=======================基 本 信 息=======================\n";
-        String str2 = String.format("版本: %s\n", VERSION);
-        String str3 = String.format("下载地址: %s\n", "https://github.com/pmiaowu/HostCollision");
-        String str4 = "请尽情享用本程序吧 ヾ(≧▽≦*)o";
-        String detail = str1 + str2 + str3 + str4;
-        return detail;
     }
 
     /**
@@ -95,8 +96,9 @@ public class Main {
         System.out.println("-hfp/-hostFilePath                  host数据来源地址<例如:./dataSource/hostList.txt>");
         System.out.println("-t/-threadTotal                     程序运行的最大线程总数<例如:6>");
         System.out.println("-o/-output                          导出格式,使用逗号分割<例如:csv,txt>");
-        System.out.println("-ioel/-isOutputErrorLog             是否将错误日志输出<例如:true/false>");
+        System.out.println("-ioel/-isOutputErrorLog             是否将错误日志输出<例如:true 输出/false 关闭>");
         System.out.println("-cssc/-collisionSuccessStatusCode   认为碰撞成功的状态码,使用逗号分割<例如: 200,301,302>");
+        System.out.println("-dsn/-dataSampleNumber              数据样本请求次数,小于等于0,表示关闭该功能");
     }
 
     /**

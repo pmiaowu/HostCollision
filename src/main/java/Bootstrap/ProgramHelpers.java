@@ -197,7 +197,7 @@ public class ProgramHelpers {
      * @param host
      * @return HttpRequest
      */
-    public HttpRequest sendHttpGetRequest(String protocol, String ip, String host) {
+    public HttpCustomRequest sendHttpGetRequest(String protocol, String ip, String host) {
         // 一定要固定一个 userAgent 头
         // 有的请求不一样的 userAgent 返回的内容也不一样,容易导致误报
         String userAgent = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36";
@@ -222,7 +222,7 @@ public class ProgramHelpers {
         }
         request.readTimeout(yamlReader.getInteger("http.readTimeout") * 1000);
         request.connectTimeout(yamlReader.getInteger("http.connectTimeout") * 1000);
-        return request;
+        return new HttpCustomRequest(request, host);
     }
 
     /**
@@ -273,5 +273,76 @@ public class ProgramHelpers {
      */
     public String getRelativeHostName() {
         return yamlReader.getString("http.relativeHostName");
+    }
+
+    /**
+     * 获取数据样本请求次数
+     *
+     * @return Integer
+     */
+    public Integer getDataSampleNumber() {
+        if (commandLine.hasOption("dsn")) {
+            String dsn = commandLine.getOptionValue("dsn");
+            return Integer.valueOf(dsn);
+        }
+
+        return yamlReader.getInteger("dataSample.number");
+    }
+
+    /**
+     * 获取http请求,header头,Service字段的黑名单列表
+     *
+     * @return List<String>
+     */
+    public List<String> getHttpServiceBlacklists() {
+        List<String> blacklists = new ArrayList();
+
+        List<String> services = yamlReader.getStringList("blacklists.httpServices");
+
+        for (String service : services) {
+            if (service.trim().length() > 0) {
+                blacklists.add(service.trim().toLowerCase());
+            }
+        }
+
+        return blacklists;
+    }
+
+    /**
+     * 获取http请求,body的黑名单列表
+     *
+     * @return List<String>
+     */
+    public List<String> getHttpBodyBlacklists() {
+        List<String> blacklists = new ArrayList();
+
+        List<String> bodies = yamlReader.getStringList("blacklists.httpBodies");
+
+        for (String body : bodies) {
+            if (body.trim().length() > 0) {
+                blacklists.add(body.trim().toLowerCase());
+            }
+        }
+
+        return blacklists;
+    }
+
+    /**
+     * 获取http请求,header头,X-Powered-By字段的黑名单列表
+     *
+     * @return
+     */
+    public List<String> getHttpXPoweredByBlacklists() {
+        List<String> blacklists = new ArrayList();
+
+        List<String> xl = yamlReader.getStringList("blacklists.httpXPoweredBy");
+
+        for (String x : xl) {
+            if (x.trim().length() > 0) {
+                blacklists.add(x.trim().toLowerCase());
+            }
+        }
+
+        return blacklists;
     }
 }
