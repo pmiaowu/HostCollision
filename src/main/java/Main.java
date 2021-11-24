@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
-    private static String VERSION = "2.2.2";
+    private static String VERSION = "2.2.3";
 
     private static ProgramHelpers programHelpers;
 

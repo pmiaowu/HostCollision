@@ -55,7 +55,7 @@ public class HostCollision implements Runnable {
                                     requestLengthMatchingReturn.request().contentLength());
                             System.out.println(str);
                         }
-                        return;
+                        continue;
                     }
 
                     for (String host : hostList) {
