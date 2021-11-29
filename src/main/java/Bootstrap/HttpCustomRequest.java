@@ -29,6 +29,9 @@ public class HttpCustomRequest {
     }
 
     public Integer contentLength() {
+        if (request().contentLength() <= 0) {
+            return this.body().length();
+        }
         return request().contentLength();
     }
 

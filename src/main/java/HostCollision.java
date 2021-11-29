@@ -49,7 +49,7 @@ public class HostCollision implements Runnable {
                     if (!requestLengthMatchingReturn.result()) {
                         statistics.add("numOfRequest", hostList.size());
                         if (programHelpers.isOutputErrorLog()) {
-                            String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为%s 有异常,不进行碰撞",
+                            String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为%s 有异常,不进行碰撞-1",
                                     protocol, ip,
                                     requestLengthMatchingReturn.request().host(),
                                     requestLengthMatchingReturn.request().contentLength());
@@ -112,7 +112,7 @@ public class HostCollision implements Runnable {
         ReturnFormat requestLengthMatchingReturn = requestLengthMatching(hcr);
         if (!requestLengthMatchingReturn.result()) {
             if (programHelpers.isOutputErrorLog()) {
-                String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为%s 有异常,不进行碰撞",
+                String str = String.format("协议:%s, ip:%s, host:%s 该请求长度为%s 有异常,不进行碰撞-2",
                         protocol, ip,
                         requestLengthMatchingReturn.request().host(),
                         requestLengthMatchingReturn.request().contentLength());
