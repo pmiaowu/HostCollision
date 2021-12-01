@@ -6,7 +6,14 @@
 
 支持动态多线程,设置代理,设置扫描协议 等等操作
 
-# 0x03 编译方法
+# 0x03 免责声明
+该工具仅用于安全自查检测
+
+由于传播、利用此工具所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，作者不为此承担任何责任。
+
+本人拥有对此工具的修改和解释权。未经网络安全部门及相关部门允许，不得善自使用本工具进行任何攻击活动，不得以任何方式将其用于商业目的。
+
+# 0x04 编译方法
 
 <details>
 <summary><b>编译方法</b></summary>
@@ -35,7 +42,7 @@ jar包地址: /HostCollision/target/HostCollision/HostCollision.jar
 
 </details>
 
-# 0x04 使用方法
+# 0x05 使用方法
 
 ```
 # 目录结构
@@ -47,7 +54,7 @@ jar包地址: /HostCollision/target/HostCollision/HostCollision.jar
 │     └── hostList.txt (输入host地址,一行一个目标)
 ```
 
-## 0x04.1 帮助文档
+## 0x05.1 帮助文档
 
 ```
 命令: java -jar HostCollision.jar -h
@@ -73,7 +80,7 @@ HostCollision % java -jar HostCollision.jar -h
 -dsn/-dataSampleNumber              数据样本请求次数,小于等于0,表示关闭该功能
 ```
 
-## 0x04.2 基础使用方法
+## 0x05.2 基础使用方法
 
 ```
 啥也不加会默认读取 config.yml 配置,运行程序
@@ -94,7 +101,7 @@ HostCollision % java -jar HostCollision.jar -h
 
 ![](./images/6.png)
 
-## 0x04.3 命令行带参数
+## 0x05.3 命令行带参数
 
 ```
 设置为:
