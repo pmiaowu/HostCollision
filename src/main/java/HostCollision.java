@@ -176,14 +176,6 @@ public class HostCollision implements Runnable {
             }
         }
 
-        // 额外样本保存
-        // 用于循环时,可以加强数据样本
-        // 注: 一定要放在 数据样本比对 的后面,不然会导致漏报
-        if (programHelpers.getDataSampleNumber() > 0 && dataSample.size() <= 30) {
-            dataSample.add(newRequest);
-            dataSample.add(newRequest2);
-        }
-
         // http状态码检查
         if (!httpStatusCodeCheck(String.valueOf(newRequest.code()))) {
             if (programHelpers.isOutputErrorLog()) {
@@ -196,7 +188,7 @@ public class HostCollision implements Runnable {
 
         // waf检查
         if (programHelpers.getDataSampleNumber() > 0 && dataSample.size() > 0) {
-            ReturnFormat wafFeatureMatchingReturn = wafFeatureMatching(dataSample);
+            ReturnFormat wafFeatureMatchingReturn = wafFeatureMatching(baseRequest, newRequest);
             if (!wafFeatureMatchingReturn.result()) {
                 if (programHelpers.isOutputErrorLog()) {
                     String str = String.format("协议:%s, ip:%s, host:%s, title:%s, 数据包大小:%s, 状态码:%s 匹配到waf特征,忽略处理",
@@ -381,20 +373,19 @@ public class HostCollision implements Runnable {
      * waf特征匹配
      * true 表示通过, false 表示不通过
      *
-     * @param lr
+     * @param baseRequest
+     * @param newRequest
      * @return
      */
-    private ReturnFormat wafFeatureMatching(List<HttpCustomRequest> lr) {
-        for (HttpCustomRequest r : lr) {
-            if (httpHeaderServiceWafFeatureMatching(r.server())) {
-                return new ReturnFormat(false, r);
-            }
-            if (httpBodyWafFeatureMatching(r.appBody())) {
-                return new ReturnFormat(false, r);
-            }
-            if (httpHeaderXPoweredByWafFeatureMatching(r.XPoweredBy())) {
-                return new ReturnFormat(false, r);
-            }
+    private ReturnFormat wafFeatureMatching(HttpCustomRequest baseRequest, HttpCustomRequest newRequest) {
+        if (httpHeaderServiceWafFeatureMatching(baseRequest, newRequest)) {
+            return new ReturnFormat(false, newRequest);
+        }
+        if (httpBodyWafFeatureMatching(baseRequest, newRequest)) {
+            return new ReturnFormat(false, newRequest);
+        }
+        if (httpHeaderXPoweredByWafFeatureMatching(baseRequest, newRequest)) {
+            return new ReturnFormat(false, newRequest);
         }
         return new ReturnFormat(true, null);
     }
@@ -403,10 +394,20 @@ public class HostCollision implements Runnable {
      * http请求,header头,Service字段的waf特征匹配
      * true 表示匹配到waf特征, false表示没匹配到waf特征
      *
-     * @param s
-     * @return Boolean
+     * @param baseRequest
+     * @param newRequest
+     * @return
      */
-    private Boolean httpHeaderServiceWafFeatureMatching(String s) {
+    private Boolean httpHeaderServiceWafFeatureMatching(HttpCustomRequest baseRequest, HttpCustomRequest newRequest) {
+        String bs = baseRequest.server();
+        String s = newRequest.server();
+
+        if ((bs != null && s != null) && (!bs.equals("") && !s.equals(""))) {
+            if (bs.equals(s)) {
+                return false;
+            }
+        }
+
         if (s != null && !s.equals("") && programHelpers.getHttpServiceBlacklists().size() > 0) {
             for (String sbl : programHelpers.getHttpServiceBlacklists()) {
                 s = s.trim().toLowerCase().replace(" ", "");
@@ -423,15 +424,25 @@ public class HostCollision implements Runnable {
      * http请求,body的waf特征匹配
      * true 表示匹配到waf特征, false表示没匹配到waf特征
      *
-     * @param s
-     * @return Boolean
+     * @param baseRequest
+     * @param newRequest
+     * @return
      */
-    private Boolean httpBodyWafFeatureMatching(String s) {
-        if (s != null && !s.equals("") && programHelpers.getHttpBodyBlacklists().size() > 0) {
+    private Boolean httpBodyWafFeatureMatching(HttpCustomRequest baseRequest, HttpCustomRequest newRequest) {
+        String bab = baseRequest.appBody();
+        String ab = newRequest.appBody();
+
+        if ((bab != null && ab != null) && (!bab.equals("") && !ab.equals(""))) {
+            if (bab.equals(ab)) {
+                return false;
+            }
+        }
+
+        if (ab != null && !ab.equals("") && programHelpers.getHttpBodyBlacklists().size() > 0) {
             for (String bbl : programHelpers.getHttpBodyBlacklists()) {
-                s = s.trim().toLowerCase().replace(" ", "");
+                ab = ab.trim().toLowerCase().replace(" ", "");
                 bbl = bbl.replace(" ", "");
-                if (s.contains(bbl)) {
+                if (ab.contains(bbl)) {
                     return true;
                 }
             }
@@ -443,15 +454,25 @@ public class HostCollision implements Runnable {
      * http请求,header头,X-Powered-By字段的waf特征匹配
      * true 表示匹配到waf特征, false表示没匹配到waf特征
      *
-     * @param s
-     * @return Boolean
+     * @param baseRequest
+     * @param newRequest
+     * @return
      */
-    private Boolean httpHeaderXPoweredByWafFeatureMatching(String s) {
-        if (s != null && !s.equals("") && programHelpers.getHttpXPoweredByBlacklists().size() > 0) {
+    private Boolean httpHeaderXPoweredByWafFeatureMatching(HttpCustomRequest baseRequest, HttpCustomRequest newRequest) {
+        String bxp = baseRequest.XPoweredBy();
+        String xp = newRequest.XPoweredBy();
+
+        if ((bxp != null && xp != null) && (!bxp.equals("") && !xp.equals(""))) {
+            if (bxp.equals(xp)) {
+                return false;
+            }
+        }
+
+        if (xp != null && !xp.equals("") && programHelpers.getHttpXPoweredByBlacklists().size() > 0) {
             for (String xl : programHelpers.getHttpXPoweredByBlacklists()) {
-                s = s.trim().toLowerCase().replace(" ", "");
+                xp = xp.trim().toLowerCase().replace(" ", "");
                 xl = xl.replace(" ", "");
-                if (s.contains(xl)) {
+                if (xp.contains(xl)) {
                     return true;
                 }
             }
