@@ -262,29 +262,29 @@ public class HostCollision implements Runnable {
     private ReturnFormat requestContentMatching(
             HttpCustomRequest baseRequest, HttpCustomRequest errorHostRequest,
             HttpCustomRequest newRequest, HttpCustomRequest newRequest2) {
-        if (newRequest.filteredPageContent().length() > 0) {
-            if (newRequest.filteredPageContent().contains(baseRequest.filteredPageContent())) {
+        if (newRequest.appBody().length() > 0) {
+            if (newRequest.appBody().contains(baseRequest.appBody())) {
                 return new ReturnFormat(false, null);
             }
-            if (baseRequest.filteredPageContent().contains(newRequest.filteredPageContent())) {
-                return new ReturnFormat(false, null);
-            }
-        }
-
-        if (errorHostRequest.filteredPageContent().length() > 0) {
-            if (newRequest.filteredPageContent().contains(errorHostRequest.filteredPageContent())) {
-                return new ReturnFormat(false, null);
-            }
-            if (errorHostRequest.filteredPageContent().contains(newRequest.filteredPageContent())) {
+            if (baseRequest.appBody().contains(newRequest.appBody())) {
                 return new ReturnFormat(false, null);
             }
         }
 
-        if (newRequest2.filteredPageContent().length() > 0) {
-            if (newRequest.filteredPageContent().contains(newRequest2.filteredPageContent())) {
+        if (errorHostRequest.appBody().length() > 0) {
+            if (newRequest.appBody().contains(errorHostRequest.appBody())) {
                 return new ReturnFormat(false, null);
             }
-            if (newRequest2.filteredPageContent().contains(newRequest.filteredPageContent())) {
+            if (errorHostRequest.appBody().contains(newRequest.appBody())) {
+                return new ReturnFormat(false, null);
+            }
+        }
+
+        if (newRequest2.appBody().length() > 0) {
+            if (newRequest.appBody().contains(newRequest2.appBody())) {
+                return new ReturnFormat(false, null);
+            }
+            if (newRequest2.appBody().contains(newRequest.appBody())) {
                 return new ReturnFormat(false, null);
             }
         }
